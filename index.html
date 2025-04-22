@@ -11,7 +11,7 @@
      //clevertap.account.push({"region": "EU1"});
 
     clevertap.privacy.push({optOut: false}); // Set to true if the user opts out
-    clevertap.privacy.push({useIP: false}); // Set to true if the user agrees to share their IP data
+    clevertap.privacy.push({useIP: true}); // Set to true if the user agrees to share their IP data
 
     (function () {
         var wzrk = document.createElement('script');
@@ -65,12 +65,8 @@
         }
 
         function pushEvent() {
-            const eventName = 'Test Event ' + Math.floor(Math.random() * 100);
-            clevertap.event.push(eventName, {
-                "Event Property 1": "Value 1",
-                "Event Property 2": Math.random() * 100,
-                "Event Timestamp": new Date()
-            }, function(err) {
+            const eventName = 'Test Event';
+            clevertap.event.push(eventName, function(err) {
                 if (err) {
                     updateStatus('Push Event failed: ' + err);
                 } else {
