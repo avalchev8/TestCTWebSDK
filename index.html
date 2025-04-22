@@ -66,13 +66,7 @@
 
         function pushEvent() {
             const eventName = 'Test Event';
-            clevertap.event.push(eventName, function(err) {
-                if (err) {
-                    updateStatus('Push Event failed: ' + err);
-                } else {
-                    updateStatus('Pushed event: ' + eventName);
-                }
-            });
+            clevertap.event.push(eventName);
         }
 
         function updateProfile() {
