@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CleverTap Web SDK Test Page</title>
+    <script type="text/javascript">
+    var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[]};
+
+    // Replace with your actual CleverTap Account ID
+    clevertap.account.push({"id": "TEST-656-4KK-547Z"});
+    // If your account is not US based, uncomment and replace with your region
+     //clevertap.account.push({"region": "EU1"});
+
+    clevertap.privacy.push({optOut: false}); // Set to true if the user opts out
+    clevertap.privacy.push({useIP: false}); // Set to true if the user agrees to share their IP data
+
+    (function () {
+        var wzrk = document.createElement('script');
+        wzrk.type = 'text/javascript';
+        wzrk.async = true;
+        wzrk.src = ('https' == document.location.protocol ? 'https://d2r1yp2w7bby2u.cloudfront.net' : 'http://static.clevertap.com') + '/js/a.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wzrk, s);
+    })();
+    </script>
+</head>
+<body>
+
+    <h1>CleverTap Web SDK Test Page</h1>
+
+    <p>Open your browser's developer console (usually by pressing F12) to see CleverTap SDK logs and confirm actions.</p>
+
+    <button onclick="identifyUser()">Identify User</button>
+    <button onclick="pushEvent()">Push Custom Event</button>
+    <button onclick="updateProfile()">Update User Profile</button>
+    <button onclick="pushChargedEvent()">Push Charged Event</button>
+    <button onclick="requestWebPush()">Request Web Push Permission</button>
+    <button onclick="onUserLogin()">Test onUserLogin</button>
+
+    <div id="status">Status: Ready</div>
+
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').innerText = 'Status: ' + message;
+            console.log('Status:', message);
+        }
+
+        function identifyUser() {
+            const userId = 'test_user_' + Math.random().toString(36).substring(7); // Generate a random user ID
+            clevertap.profile.push({
+                "Site": {
+                    "Identity": userId, // String or number
+                    "Email": userId + '@example.com', // Email address of the user
+                    "Phone": "+1" + Math.floor(Math.random() * 10000000000), // Phone (with the country code)
+                    "Name": "Test User " + userId.substring(5),
+                    "Gender": "M",
+                    "DOB": new Date()
+                }
+            }, function(err) {
+                if (err) {
+                    updateStatus('Identify User failed: ' + err);
+                } else {
+                    updateStatus('User identified with ID: ' + userId);
+                }
+            });
+        }
+
+        function pushEvent() {
+            const eventName = 'Test Event ' + Math.floor(Math.random() * 100);
+            clevertap.event.push(eventName, {
+                "Event Property 1": "Value 1",
+                "Event Property 2": Math.random() * 100,
+                "Event Timestamp": new Date()
+            }, function(err) {
+                if (err) {
+                    updateStatus('Push Event failed: ' + err);
+                } else {
+                    updateStatus('Pushed event: ' + eventName);
+                }
+            });
+        }
+
+        function updateProfile() {
+            clevertap.profile.push({
+                "Site": {
+                    "Customer Type": "Gold",
+                    "Last Updated": new Date()
+                }
+            }, function(err) {
+                if (err) {
+                    updateStatus('Update Profile failed: ' + err);
+                } else {
+                    updateStatus('User profile updated.');
+                }
+            });
+        }
+
+        function pushChargedEvent() {
+            const price = Math.random() * 1000;
+            const items = [
+                { "Product id": "123", "Product name": "Laptop", "Category": "Electronics", "Price": 1200 },
+                { "Product id": "456", "Product name": "Mouse", "Category": "Accessories", "Price": 25 }
+            ];
+            clevertap.event.push("Charged an Amount", {
+                "Amount": price,
+                "Payment mode": "Credit Card",
+                "Items": items
+            }, function(err) {
+                if (err) {
+                    updateStatus('Push Charged Event failed: ' + err);
+                } else {
+                     updateStatus('Pushed Charged an Amount event with amount: ' + price.toFixed(2));
+                }
+            });
+        }
+
+        function requestWebPush() {
+            clevertap.notifications.push({
+                "titleText":'Allow Notifications?',
+                "bodyText":'We would like to send you notifications about updates and promotions.',
+                "okButtonText":'Allow',
+                "rejectButtonText":'Later',
+                "askAgainTimeInSeconds": 5, // Ask again in 5 seconds if rejected
+                "hidePoweredByCT": false // Set to true to hide "Powered by CleverTap"
+            }, function(err) {
+                if (err) {
+                    updateStatus('Request Web Push failed: ' + err);
+                } else {
+                    updateStatus('Web Push permission requested.');
+                }
+            });
+        }
+
+         function onUserLogin() {
+            const userId = 'logged_in_user_' + Math.random().toString(36).substring(7); // Generate a random user ID
+             clevertap.onUserLogin.push({
+                "Site": {
+                    "Identity": userId, // String or number
+                    "Email": userId + '@loggedin.com', // Email address of the user
+                    "Name": "Logged In User " + userId.substring(12)
+                    // Add other profile properties as needed
+                }
+            }, function(err) {
+                if (err) {
+                    updateStatus('onUserLogin failed: ' + err);
+                } else {
+                    updateStatus('User logged in with ID: ' + userId);
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
